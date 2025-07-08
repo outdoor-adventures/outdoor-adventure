@@ -54,18 +54,30 @@ const PendingAdventure = () => {
             address: adventure.address,
             link: adventure.link,
             description: adventure.description,
-            price: adventure.price,
-            category: adventure.category,
-            difficulty: adventure.difficulty
+            cost_level_id: adventure.cost_level_id,
+            category_id: adventure.category_id,
+            ability_level_id: adventure.ability_level_id,
+            latitude: adventure.latitude,
+            longitude: adventure.longitude
         });
     };
 
     // Handler for saving edits
     const handleSaveEdit = (id) => {
-        fetch(`/api/adventures/${id}`, {
+        fetch(`/api/adventures/admin/${id}`, {
             method: 'PUT',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(editData)
+            body: JSON.stringify({
+                activity_name: editData.activity_name,
+                address: editData.address,
+                link: editData.link,
+                description: editData.description,
+                cost_level_id: editData.cost_level_id,
+                category_id: editData.category_id,
+                ability_level_id: editData.ability_level_id,
+                latitude: editData.latitude || '',
+                longitude: editData.longitude || ''
+            })
         })
             .then((res) => {
                 if (!res.ok) throw new Error(`Save failed: ${res.status}`);
@@ -79,13 +91,13 @@ const PendingAdventure = () => {
             });
     };
 
-    // Handler for canceling edit
+    // Function for canceling edit
     const handleCancelEdit = () => {
         setEditingId(null);
         setEditData({});
     };
 
-    // Handler for Accept
+    // Function for Accept
     const handleAccept = (id) => {
         fetch(`/api/adventures/status/${id}`, { method: 'PUT' })
             .then((res) => {
@@ -98,7 +110,7 @@ const PendingAdventure = () => {
             });
     };
 
-    // Handler for Delete
+    // Function for Delete
     const handleDelete = (id) => {
         fetch(`/api/adventures/${id}`, { method: 'DELETE' })
             .then((res) => {
@@ -111,7 +123,8 @@ const PendingAdventure = () => {
             });
     };
 
-    // Loading state
+    // When page is loading
+
     if (loading) {
         return (
             <section className="pending-page">
@@ -123,7 +136,8 @@ const PendingAdventure = () => {
         );
     }
 
-    // Error state
+    // Error SEtup
+
     if (error) {
         return (
             <section className="pending-page">
@@ -135,7 +149,8 @@ const PendingAdventure = () => {
         );
     }
 
-    // Empty state
+    // When no adventures are available
+
     if (adventures.length === 0) {
         return (
             <section className="pending-page">
@@ -147,7 +162,7 @@ const PendingAdventure = () => {
         );
     }
 
-    // Main render
+    
     return (
         
         <section className="pending-page">
@@ -176,7 +191,7 @@ const PendingAdventure = () => {
                             <div className="card-top">
                                 <div className="card-top-left">
                                 <p>
-                      <img src={`http://localhost:5001/public/uploads/${adv.photo}`}
+                      <img src={`/uploads/${adv.photo}`}
                       alt={adv.photo}
                       className='adventure-image' />
 
@@ -190,18 +205,16 @@ const PendingAdventure = () => {
                                             </label>
                                             <select
                                                 id={`price-${adv.id}`}
-                                                value={editingId === adv.id ? editData.price : adv.price}
-                                                onChange={(e) => editingId === adv.id && setEditData({...editData, price: e.target.value})}
+                                                value={editingId === adv.id ? (editData.cost_level_id || '') : (adv.cost_level_id || '')}
+                                                onChange={(e) => editingId === adv.id && setEditData({...editData, cost_level_id: e.target.value})}
                                                 disabled={editingId !== adv.id}
                                             >
                                                 {costLevels.map((c) => (
                                                     <option
                                                         key={c.id}
-                                                        value={
-                                                            c.cost_level || c.label
-                                                        }
+                                                        value={c.id}
                                                     >
-                                                        {c.cost_level || c.label}
+                                                        {c.cost_level}
                                                     </option>
                                                 ))}
                                             </select>
@@ -214,14 +227,14 @@ const PendingAdventure = () => {
                                             </label>
                                             <select
                                                 id={`category-${adv.id}`}
-                                                value={editingId === adv.id ? editData.category : adv.category}
-                                                onChange={(e) => editingId === adv.id && setEditData({...editData, category: e.target.value})}
+                                                value={editingId === adv.id ? (editData.category_id || '') : (adv.category_id || '')}
+                                                onChange={(e) => editingId === adv.id && setEditData({...editData, category_id: e.target.value})}
                                                 disabled={editingId !== adv.id}
                                             >
                                                 {categories.map((c) => (
                                                     <option
                                                         key={c.id}
-                                                        value={c.name}
+                                                        value={c.id}
                                                     >
                                                         {c.category_name}
                                                     </option>
@@ -236,18 +249,16 @@ const PendingAdventure = () => {
                                             </label>
                                             <select
                                                 id={`difficulty-${adv.id}`}
-                                                value={editingId === adv.id ? editData.difficulty : adv.difficulty}
-                                                onChange={(e) => editingId === adv.id && setEditData({...editData, difficulty: e.target.value})}
+                                                value={editingId === adv.id ? (editData.ability_level_id || '') : (adv.ability_level_id || '')}
+                                                onChange={(e) => editingId === adv.id && setEditData({...editData, ability_level_id: e.target.value})}
                                                 disabled={editingId !== adv.id}
                                             >
                                                 {abilities.map((a) => (
                                                     <option
                                                         key={a.id}
-                                                        value={
-                                                            a.level || a.name
-                                                        }
+                                                        value={a.id}
                                                     >
-                                                        {a.ability_level || a.name}
+                                                        {a.ability_level}
                                                     </option>
                                                 ))}
                                             </select>
@@ -287,17 +298,17 @@ const PendingAdventure = () => {
                             <div className="card-buttons">
                                 {editingId === adv.id ? (
                                     <>
-                                        <button
+                                        {/* <button
                                             className="btn accept"
                                             onClick={() => handleSaveEdit(adv.id)}
                                         >
                                             Save
-                                        </button>
+                                        </button> */}
                                         <button
                                             className="btn delete"
                                             onClick={handleCancelEdit}
                                         >
-                                            Cancel
+                                            Next
                                         </button>
                                     </>
                                 ) : (

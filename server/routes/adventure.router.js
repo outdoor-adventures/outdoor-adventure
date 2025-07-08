@@ -233,7 +233,7 @@ router.delete('/:id', (req, res) => {
 
 
 
-//UPDATE POST
+//UPDATE POST (with photo)
 router.put('/:id', upload.single('photo'), (req, res) => {
     const { id } = req.params;
 
@@ -284,7 +284,41 @@ router.put('/:id', upload.single('photo'), (req, res) => {
     })
 })
 
+//UPDATE POST (admin edit without photo)
+router.put('/admin/:id', (req, res) => {
+    const { id } = req.params;
+    const { category_id, activity_name, ability_level_id, cost_level_id, link, 
+        description, latitude, longitude, address} = req.body;
+    
+    const sqlText = `
+    UPDATE "adventures"
+    SET 
+    "category_id" = $1,
+    "ability_level_id" = $2,
+    "cost_level_id" = $3,
+    "link" = $4,
+    "activity_name" = $5,
+    "description" = $6,
+    "latitude" = $7,
+    "longitude" = $8,
+    "address" = $9
+    WHERE "id" = $10;`
 
+    const sqlValues = [
+        category_id, ability_level_id, cost_level_id,
+        link, activity_name, description,
+        latitude, longitude, address, id
+    ];
+
+    pool.query(sqlText, sqlValues)
+    .then(() => {
+        res.sendStatus(200)
+    })
+    .catch((dbErr) => {
+        console.log('Admin PUT route error:', dbErr);
+        res.sendStatus(500)
+    })
+})
 
 //UPDATE STATUS to ACCEPTEC
 router.put('/status/:id', (req, res) => {
