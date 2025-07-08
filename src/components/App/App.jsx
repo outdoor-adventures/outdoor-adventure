@@ -17,7 +17,7 @@ import AddAdventureForm from '../AddAdventureForm/AddAdventureForm';
 import UserPage from '../UserPage/UserPage';
 import AdminPage from '../AdminPage/AdminPage';
 import Footer from '../Footer/Footer';
-import AccessErrorPage from '../404Page/AccessErrorPage';
+import AccessErrorPage from '../AccessErrorPage/AccessErrorPage.jsx';
 
 const apiKey = import.meta.env.VITE_GOOGLE_MAPS_API_KEY; //google mapsi api key
 const libraries = ["places"]; //used for google maps api

@@ -86,6 +86,7 @@ With so many exciting adventures being added, an admin can make sure Outdoor Adv
 <img src="/public/images/instructional-images/nav-top-left.png">
 
 - Click on ***APIs & Services*** tab.
+<<<<<<< HEAD
 
 <img src="/public/images/instructional-images/api-service-nav.png">
 
@@ -123,4 +124,44 @@ so feel free to add those in if you would like.
 
 ## All Done! 
 - Once all of the steps have been followed, Your API Key can be found in the Credentials tab once the "show key" button has been clicked.
+=======
+
+<img src="/public/images/instructional-images/api-service-nav.png">
+
+- Now that you are in the APIs and Services tab, click on the ***Credentials*** tab on the left,
+then click the ***+Create Credentials*** button and select the API key option in the dropdown.
+
+<img src="/public/images/instructional-images/credentials.png">
+
+## Now you have a key, so lets restrict it
+
+- :warning: **Important:** Restricting a key is a crucial step, without restriction, others that access your key, 
+can use your key.
+
+- Shown below is a new key. The :warning: symbol next to the key name means it is unrestricted.
+To restrict it, click on the key name. In this photo, the key name is shown as "API key 3".
+
+<img src="/public/images/instructional-images/new-key.png">
+
+- Once you are in the Key Restrictions menu, under **Application restrictions**, select **Websites** as the restriction type, now below, click the **+Add** button and add your websites domain. The domain will be something like **https://ExampleSite.com** if you are using any subdomains you may need to read up on how to include them in your restrictions.
+
+<img src="/public/images/instructional-images/restrictions.png">
+
+- Optionally, in the Second to last circle on the image above, 
+you can also add restriction by APIs. in this project we use 
+**Maps JavaScript API**, **Geocoding API**, and the **Places API**.
+so feel free to add those in if you would like.
+
+- Click the save button to save your restrictions. the original :warning: symbol next to the name should now be a green circle with a check mark.
+
+## Enable all required APIs
+
+<img src="/public/images/instructional-images/enabl-apis.png">
+
+- Click **Enabled APIs & Services** Tab, then click the **+ Enable APIs and Services** button and go through and enable the following: **Maps JavaScript API**, **Geocoding API** and lastly, **Places API**.
+
+## All Done! 
+- Once all of the steps have been followed, Your API Key can be found in the Credentials tab once the "show key" button has been clicked.
+
+>>>>>>> e4fdaa7862bd7f49a783d86dfc1c66d8a0ed1471
 

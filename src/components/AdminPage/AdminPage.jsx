@@ -10,6 +10,8 @@ const PendingAdventure = () => {
     const [categories, setCategories] = useState([]);
     const [abilities, setAbilities] = useState([]);
     const [costLevels, setCostLevels] = useState([]);
+    const [editingId, setEditingId] = useState(null);
+    const [editData, setEditData] = useState({});
 
     // Unified data loader
     const loadData = () => {
@@ -44,17 +46,43 @@ const PendingAdventure = () => {
     }, []);
 
 
-    //handler for edit
-    const handleEdit = (id) => {
-        fetch(`/api/adventures/${id}`, { method: 'PUT' })
+    // Handler for starting edit mode
+    const handleEdit = (adventure) => {
+        setEditingId(adventure.id);
+        setEditData({
+            activity_name: adventure.activity_name,
+            address: adventure.address,
+            link: adventure.link,
+            description: adventure.description,
+            price: adventure.price,
+            category: adventure.category,
+            difficulty: adventure.difficulty
+        });
+    };
+
+    // Handler for saving edits
+    const handleSaveEdit = (id) => {
+        fetch(`/api/adventures/${id}`, {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(editData)
+        })
             .then((res) => {
-                if (!res.ok) throw new Error(`Accept failed: ${res.status}`);
+                if (!res.ok) throw new Error(`Save failed: ${res.status}`);
+                setEditingId(null);
+                setEditData({});
                 loadData();
             })
             .catch((err) => {
                 console.error(err);
-                alert(`Accept action failed: ${err.message}`);
+                alert(`Save failed: ${err.message}`);
             });
+    };
+
+    // Handler for canceling edit
+    const handleCancelEdit = () => {
+        setEditingId(null);
+        setEditData({});
     };
 
     // Handler for Accept
@@ -133,12 +161,22 @@ const PendingAdventure = () => {
                 {adventures.map((adv) => (
                     <li key={adv.id}>
                         <article className="pending-card">
-                            <div className="card-title">{adv.activity_name}</div>
+                            <div className="card-title">
+                                {editingId === adv.id ? (
+                                    <input
+                                        type="text"
+                                        value={editData.activity_name || ''}
+                                        onChange={(e) => setEditData({...editData, activity_name: e.target.value})}
+                                    />
+                                ) : (
+                                    adv.activity_name
+                                )}
+                            </div>
 
                             <div className="card-top">
                                 <div className="card-top-left">
                                 <p>
-                      <img src={`http://localhost:5001/uploads/${adv.photo}`}
+                      <img src={`http://localhost:5001/public/uploads/${adv.photo}`}
                       alt={adv.photo}
                       className='adventure-image' />
 
@@ -152,7 +190,9 @@ const PendingAdventure = () => {
                                             </label>
                                             <select
                                                 id={`price-${adv.id}`}
-                                                defaultValue={adv.price}
+                                                value={editingId === adv.id ? editData.price : adv.price}
+                                                onChange={(e) => editingId === adv.id && setEditData({...editData, price: e.target.value})}
+                                                disabled={editingId !== adv.id}
                                             >
                                                 {costLevels.map((c) => (
                                                     <option
@@ -174,7 +214,9 @@ const PendingAdventure = () => {
                                             </label>
                                             <select
                                                 id={`category-${adv.id}`}
-                                                defaultValue={adv.category}
+                                                value={editingId === adv.id ? editData.category : adv.category}
+                                                onChange={(e) => editingId === adv.id && setEditData({...editData, category: e.target.value})}
+                                                disabled={editingId !== adv.id}
                                             >
                                                 {categories.map((c) => (
                                                     <option
@@ -194,7 +236,9 @@ const PendingAdventure = () => {
                                             </label>
                                             <select
                                                 id={`difficulty-${adv.id}`}
-                                                defaultValue={adv.difficulty}
+                                                value={editingId === adv.id ? editData.difficulty : adv.difficulty}
+                                                onChange={(e) => editingId === adv.id && setEditData({...editData, difficulty: e.target.value})}
+                                                disabled={editingId !== adv.id}
                                             >
                                                 {abilities.map((a) => (
                                                     <option
@@ -216,45 +260,68 @@ const PendingAdventure = () => {
                                 <label>Location</label>
                                 <input
                                     type="text"
-                                    readOnly
-                                    value={adv.address}
+                                    readOnly={editingId !== adv.id}
+                                    value={editingId === adv.id ? editData.address || '' : adv.address}
+                                    onChange={(e) => editingId === adv.id && setEditData({...editData, address: e.target.value})}
                                 />
                             </div>
                             <div className="field">
                                 <label>Link (Optional)</label>
-                                <input type="text" readOnly value={adv.link} />
+                                <input
+                                    type="text"
+                                    readOnly={editingId !== adv.id}
+                                    value={editingId === adv.id ? editData.link || '' : adv.link}
+                                    onChange={(e) => editingId === adv.id && setEditData({...editData, link: e.target.value})}
+                                />
                             </div>
                             <div className="field description">
                                 <label>Description</label>
                                 <textarea
-                                    readOnly
+                                    readOnly={editingId !== adv.id}
                                     rows="3"
-                                    value={adv.description}
+                                    value={editingId === adv.id ? editData.description || '' : adv.description}
+                                    onChange={(e) => editingId === adv.id && setEditData({...editData, description: e.target.value})}
                                 />
                             </div>
 
                             <div className="card-buttons">
-
-                            <button
-                                    className="btn delete"
-                                    onClick={() => handleEdit(adv.id)}
-                                >
-                                    Edit
-                                </button>
-
-                                <button
-                                    className="btn accept"
-                                    onClick={() => handleAccept(adv.id)}
-                                >
-                                    Accept
-                                </button>
-                                {/* Return for Revision button removed (stretch goal) */}
-                                <button
-                                    className="btn delete"
-                                    onClick={() => handleDelete(adv.id)}
-                                >
-                                    Delete
-                                </button>
+                                {editingId === adv.id ? (
+                                    <>
+                                        <button
+                                            className="btn accept"
+                                            onClick={() => handleSaveEdit(adv.id)}
+                                        >
+                                            Save
+                                        </button>
+                                        <button
+                                            className="btn delete"
+                                            onClick={handleCancelEdit}
+                                        >
+                                            Cancel
+                                        </button>
+                                    </>
+                                ) : (
+                                    <>
+                                        <button
+                                            className="btn delete"
+                                            onClick={() => handleEdit(adv)}
+                                        >
+                                            Edit
+                                        </button>
+                                        <button
+                                            className="btn accept"
+                                            onClick={() => handleAccept(adv.id)}
+                                        >
+                                            Accept
+                                        </button>
+                                        <button
+                                            className="btn delete"
+                                            onClick={() => handleDelete(adv.id)}
+                                        >
+                                            Delete
+                                        </button>
+                                    </>
+                                )}
                             </div>
                         </article>
                     </li>
