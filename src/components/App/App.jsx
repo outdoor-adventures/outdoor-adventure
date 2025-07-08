@@ -17,6 +17,7 @@ import AddAdventureForm from '../AddAdventureForm/AddAdventureForm';
 import UserPage from '../UserPage/UserPage';
 import AdminPage from '../AdminPage/AdminPage';
 import Footer from '../Footer/Footer';
+import AccessErrorPage from '../404Page/AccessErrorPage';
 
 const apiKey = import.meta.env.VITE_GOOGLE_MAPS_API_KEY; //google mapsi api key
 const libraries = ["places"]; //used for google maps api
@@ -75,7 +76,7 @@ function App() {
                         exact
                         path="/admin/pending"
                         element={
-                            user.id && user.rank === 'ADMIN' ? (
+                            user.id && user.permission === 1 ? (
                                 <PendingAdventure />
                             ) : (
                                 <Navigate to="/login" replace />
@@ -87,7 +88,11 @@ function App() {
                         exact
                         path="/admin"
                         element={
-                          <AdminPage />
+                            user.id && user.user_rank === 1 ? (
+                                <AdminPage />
+                            ) : (
+                                <AccessErrorPage />
+                            )
                         }
                     />
 
