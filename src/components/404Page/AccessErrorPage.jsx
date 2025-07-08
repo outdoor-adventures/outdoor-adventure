@@ -1,4 +1,5 @@
 import React from 'react'
+import './AccessErrorPage.css'
 
 export default function AccessErrorPage() {
   return (
